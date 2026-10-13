@@ -215,6 +215,7 @@ main { outline: none; }
   overflow-x: auto; scrollbar-width: none;
   margin: 0 calc(var(--gutter) * -1); padding: 4px var(--gutter) 6px;
   scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--gutter); /* snap to the page margin, not the screen edge */
 }
 .scroller::-webkit-scrollbar { display: none; }
 .scroller > * { scroll-snap-align: start; flex: none; }
