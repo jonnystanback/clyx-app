@@ -520,12 +520,12 @@ main { outline: none; }
   .section { margin-top: 34px; }
 
   /* Event detail */
-  .page--event { padding-top: 0; }
+  .page--event { padding-top: 12px; }
   .page--event .back { display: none; }
   .event { grid-template-columns: 1fr; gap: 24px; }
   .event > div:first-child { display: contents; }
   .presented { order: 2; margin-top: 0; }
-  .event__media { margin: 0 calc(var(--gutter) * -1); border-radius: 0; aspect-ratio: 1 / 1; }
+  .event__media { border-radius: 16px; aspect-ratio: 1 / 1; }
   .event__media .back-float {
     position: absolute; top: 12px; left: 12px; z-index: 2;
     width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,.92);
