@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "clyx-app", "runtimeExecutable": "python3", "runtimeArgs": ["-m", "http.server", "8040"], "port": 8040 }
+  ]
+}

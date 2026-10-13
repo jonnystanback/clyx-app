@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>clyx</title>
+  <meta name="description" content="A social layer for real experiences. See what your friends and favorite communities are doing.">
+  <link rel="icon" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=8">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a href="#/" class="logo" aria-label="clyx home"><img src="assets/logo.svg" alt="clyx"></a>
+      <nav class="topnav" aria-label="Main">
+        <a href="#/explore" data-nav="explore">Explore</a>
+        <a href="#/my-events" data-nav="my-events">My Events</a>
+        <a href="#/friends" data-nav="friends">Friends</a>
+      </nav>
+      <nav class="sitenav" aria-label="Site">
+        <a href="#/explore">App</a>
+        <button data-scroll="about">About</button>
+        <button data-scroll="reviews">Reviews</button>
+        <button class="sitenav__cta" data-toast="Event creation is coming soon">Create an Event</button>
+      </nav>
+      <a href="#/profile" class="topbar__me" aria-label="Your profile"><img id="me-avatar" alt=""></a>
+    </div>
+  </header>
+
+  <!-- Liquid-glass refraction for the landing pill. app.js draws the displacement map to fit the pill. -->
+  <svg class="glass-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <filter id="liquid-glass" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB" primitiveUnits="userSpaceOnUse">
+      <feImage id="liquid-glass-map" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="map"/>
+      <feDisplacementMap in="SourceGraphic" in2="map" scale="96" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+
+  <main id="view" tabindex="-1"></main>
+
+  <nav class="tabbar" aria-label="Main">
+    <a href="#/explore" data-nav="explore"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span>Explore</span></a>
+    <a href="#/my-events" data-nav="my-events"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>My Events</span></a>
+    <a href="#/friends" data-nav="friends"><svg viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><circle cx="17" cy="9" r="2.6"/><path d="M17.5 14.6c2.2.4 3.6 2 4 4.4"/></svg><span>Friends</span></a>
+    <a href="#/profile" data-nav="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4"/><path d="M4 20.5c1-4 4.2-6 8-6s7 2 8 6"/></svg><span>You</span></a>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="data.js?v=1"></script>
+  <script src="home.js?v=4"></script>
+  <script src="app.js?v=5"></script>
+</body>
+</html>
