@@ -1174,25 +1174,25 @@ body.pe-open { overflow: hidden; }
   .pe-themes { grid-template-columns: 1fr 1fr; }
 }
 
-/* Mobile header: no pill and no blend. Just the logo and hamburger at the top of the page,
-   scrolling away with it (not sticky). The menu still drops down from it. */
+/* Mobile header: a sticky white pill blended with exclusion instead of glass, so it shows a
+   negative of whatever passes beneath (black over the white page). The blend is switched off
+   while the menu is open, since the menu panel lives inside the header and would invert too. */
 @media (max-width: 760px) {
-  :root { --topbar-h: 0px; } /* nothing sticky up top, so stacked cards can pin to the very top */
-  .topbar { position: relative; }
+  .topbar { mix-blend-mode: exclusion; }
+  .topbar.is-open { mix-blend-mode: normal; }
   .topbar__inner,
   html.has-liquid .topbar__inner,
   .topbar.on-dark .topbar__inner,
   html.has-liquid .topbar.on-dark .topbar__inner {
-    background: none;
+    background: #fff;
     backdrop-filter: none; -webkit-backdrop-filter: none;
     box-shadow: none;
-    padding: 0 0 0 2px;
   }
   .topbar__inner::before { display: none; }
   .topbar.on-dark .logo img { filter: none; }
   .topbar.on-dark .menu-btn { color: var(--ink); }
-  .menu-btn { margin-right: -8px; }
-  .menu-btn:hover { background: var(--soft); }
+  .menu-btn:hover { background: none; }
+}
 }
 }
 
