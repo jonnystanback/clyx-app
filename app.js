@@ -80,7 +80,8 @@ const heartBtn = (e, cls = "heart") =>
 /* ───────────────────────── Components ───────────────────────── */
 
 function eventCard(e, { badge } = {}) {
-  const fl = friendLine(e);
+  const past = e.day < 0;
+  const fl = past ? friendLine(e).replace(/ (is|are) going$/, " went").replace(/ going$/, " went") : friendLine(e);
   return `
   <a class="card" href="#/event/${e.id}">
     <div class="card__media">
@@ -92,7 +93,7 @@ function eventCard(e, { badge } = {}) {
       <div class="card__when">${longDate(e.day)} · ${e.start}</div>
       <div class="card__title">${esc(e.title)}</div>
       <div class="card__where">${esc(e.venue)} · ${esc(e.area)}</div>
-      <div class="card__social">${stack(attendees(e))}<span class="card__count">${goingCount(e)} going</span></div>
+      <div class="card__social">${stack(attendees(e))}<span class="card__count">${goingCount(e)} ${past ? "went" : "going"}</span></div>
       ${fl ? `<div class="card__friends">${fl}</div>` : ""}
     </div>
   </a>`;
@@ -449,38 +450,6 @@ function viewCommunity(id) {
   </div>`;
 }
 
-function viewProfile() {
-  const me = PEOPLE.me;
-  const past = state.going.map(eventById).filter((e) => e && e.day < 0);
-  const metCount = new Set(past.flatMap((e) => e.going)).size - (past.length ? 1 : 0);
-  return `
-  <div class="page">
-    <div class="profile-head">
-      <img src="${me.photo}" alt="">
-      <div>
-        <h1>${esc(me.name)}</h1>
-        <div class="lede">@${me.handle} · ${me.city}</div>
-        <div class="profile-stats">
-          <div class="stat"><b>${past.length}</b><span>experiences</span></div>
-          <div class="stat"><b>${metCount}</b><span>people met</span></div>
-          <div class="stat"><b>${state.following.length}</b><span>friends</span></div>
-        </div>
-      </div>
-    </div>
-    <section class="section">
-      <div class="section__head"><h2 class="h2">Your communities</h2></div>
-      ${state.joined.length ? `<div class="comms">${state.joined.map(commTile).join("")}</div>` : `<div class="empty">Join a community to see it here.</div>`}
-    </section>
-    <section class="section">
-      <div class="section__head"><h2 class="h2">Memories</h2></div>
-      <div class="grid-3">${past.map((e) => eventCard(e)).join("")}</div>
-    </section>
-    <section class="section">
-      <button class="btn btn--ghost btn--sm" data-reset>Reset demo data</button>
-    </section>
-  </div>`;
-}
-
 function viewNotFound() {
   return `<div class="page"><h1 class="display">Lost?</h1><a class="btn btn--yellow" href="#/explore">Back to Explore</a></div>`;
 }
@@ -615,7 +584,10 @@ document.addEventListener("click", (ev) => {
   }
   if (d.reset !== undefined) {
     try { localStorage.removeItem(STORE_KEY); } catch {}
+    delete state.profile;
     Object.assign(state, structuredClone(SEED_STATE));
+    closeEditor();
+    syncMe();
     toast("Demo data reset");
     return refresh();
   }
@@ -736,5 +708,5 @@ document.addEventListener("click", (ev) => {
 }, true);
 matchMedia("(min-width: 761px)").addEventListener("change", (e) => e.matches && setMenu(false));
 
-$("#me-avatar").src = PEOPLE.me.photo;
+syncMe();
 render();

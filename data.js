@@ -7,7 +7,7 @@ const img = (id, w = 900) =>
   `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`;
 
 const PEOPLE = {
-  me:     { name: "Jonny S.",   handle: "jonny",  photo: img("1507003211169-0a1dd7228f2d", 200), city: "Los Angeles" },
+  me:     { name: "Jonny S.",   handle: "jonny",  photo: "assets/me.jpg", city: "Los Angeles" },
   maya:   { name: "Maya Chen",  handle: "maya",   photo: img("1494790108377-be9c29b29330", 200), friend: true },
   leo:    { name: "Leo Brandt", handle: "leo",    photo: img("1500648767791-00dcc994a43e", 200), friend: true },
   kayla:  { name: "Kayla Ruiz", handle: "kayla",  photo: img("1438761681033-6461ffad8d80", 200), friend: true },

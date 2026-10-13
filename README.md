@@ -15,6 +15,7 @@ Then open http://localhost:8040.
 | `styles.css` | All styling. Brand tokens at the top of the file; mobile overrides under `@media (max-width: 760px)`. |
 | `data.js` | Mock people, communities, events, friend activity. Edit this to change content. `TODAY` pins the demo date. |
 | `home.js` | Landing page (`#/`): hero, partner strip, poster marquee, reviews, stacked feature cards, phone section, footer. Copy and photos are in `HOME`, `POSTERS` and `PARTNERS` at the top. |
+| `profile.js` | Your profile (`#/profile`) and its live editor sheet. Defaults, prompts, interests, cover themes and vouches are at the top. |
 | `app.js` | Hash router, views, and interactions. |
 | `assets/` | Wordmark and favicon (copied from `~/clyx`), and Alte Haas Grotesk in `assets/fonts/`. Geist Mono loads from Google Fonts. |
 
@@ -26,7 +27,7 @@ Then open http://localhost:8040.
 - `#/my-events`: Upcoming, Saved, and Past.
 - `#/friends`: friend activity feed, "See who clyx with you" (people met at past events), friend list.
 - `#/community/:id`: community page with leader, members, and upcoming events.
-- `#/profile`: your communities and memories, plus a "Reset demo data" button.
+- `#/profile`: a personal page you can theme and fill in: cover theme and text, photo, bio, "Open to plans" status, prompts, interests, song on repeat, socials, badges, people you've clicked with, memories, communities and vouches. "Edit profile" opens a sheet that updates the page live; privacy settings control who sees upcoming plans. "Reset demo data" is at the bottom of the editor.
 
 RSVPs, saves, joins and friend adds persist in `localStorage`.
 
