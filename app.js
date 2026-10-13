@@ -506,7 +506,7 @@ function render({ keepScroll = false } = {}) {
   const y = window.scrollY;
   view.innerHTML = (html || viewNotFound)();
 
-  const section = ["event", "community", "home"].includes(name) ? null : name;
+  const section = ["event", "community"].includes(name) ? null : name;
   document.querySelectorAll("[data-nav]").forEach((a) => a.classList.toggle("is-active", a.dataset.nav === section));
 
   const route = location.hash;
@@ -514,7 +514,9 @@ function render({ keepScroll = false } = {}) {
   else if (route !== lastRoute) window.scrollTo(0, 0);
   lastRoute = route;
 
-  if (name === "home") { initHome(); fitGlass(); }
+  if (name === "home") initHome();
+  setMenu(false);
+  fitPill();
   queueTone();
   view.querySelectorAll("img").forEach((im) => im.addEventListener("error", () => im.classList.add("img-missing"), { once: true }));
 }
@@ -544,6 +546,8 @@ document.addEventListener("click", (ev) => {
   const el = ev.target.closest("button, a");
   if (!el) return;
   const d = el.dataset;
+
+  if (d.menu !== undefined) return setMenu(!topbar.classList.contains("is-open"));
 
   if (d.save !== undefined) {
     ev.preventDefault();
@@ -636,31 +640,37 @@ document.addEventListener("input", (ev) => {
   s.setSelectionRange(pos, pos);
 });
 
-/* ───────────────────────── Glass pill (landing) ───────────────────────── */
+/* ───────────────────────── Glass header ───────────────────────── */
 
 // Only Chromium can run an SVG filter inside backdrop-filter; everyone else keeps the frosted CSS.
 const HAS_LIQUID = !!navigator.userAgentData?.brands?.some((b) => /Chromium/.test(b.brand));
 if (HAS_LIQUID) document.documentElement.classList.add("has-liquid");
 
-// Draws a displacement map for a pill of w x h. Red/green encode x/y offsets (128 = none).
-// Near the rim, pixels sample from further inside, so content bends like light through a lens edge.
-function glassMap(w, h) {
-  const r = h / 2, band = Math.min(r * 0.95, 26);
+// Draws a displacement map for a w x h rounded rectangle with corner radius r.
+// Red/green encode x/y offsets (128 = none). Near the rim, pixels sample from further inside,
+// so content bends like light through the edge of a lens.
+function glassMap(w, h, r) {
+  const band = Math.min(r * 0.95, 26);
+  const hx = w / 2, hy = h / 2;
   const c = document.createElement("canvas");
   c.width = w; c.height = h;
   const ctx = c.getContext("2d");
   const data = ctx.createImageData(w, h);
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
-      const px = x + 0.5, py = y + 0.5;
-      const cx = Math.min(Math.max(px, r), w - r);        // nearest point on the pill's spine
-      let dx = px - cx, dy = py - r;
-      const len = Math.hypot(dx, dy) || 1;
-      const depth = r - len;                             // distance in from the rim
+      const px = x + 0.5 - hx, py = y + 0.5 - hy;
+      const sx = Math.sign(px) || 1, sy = Math.sign(py) || 1;
+      const qx = Math.abs(px) - (hx - r), qy = Math.abs(py) - (hy - r);
+      let depth, nx, ny;
+      if (qx > 0 && qy > 0) {                          // in a rounded corner
+        const len = Math.hypot(qx, qy);
+        depth = r - len; nx = sx * qx / len; ny = sy * qy / len;
+      } else if (qx > qy) { depth = r - qx; nx = sx; ny = 0; }
+      else { depth = r - qy; nx = 0; ny = sy; }
       let ox = 0, oy = 0;
       if (depth > 0 && depth < band) {
-        const k = Math.pow(1 - depth / band, 2.2);       // strongest right at the edge
-        ox = -(dx / len) * k; oy = -(dy / len) * k;
+        const k = Math.pow(1 - depth / band, 2.2);      // strongest right at the edge
+        ox = -nx * k; oy = -ny * k;
       }
       const i = (y * w + x) * 4;
       data.data[i] = 128 + ox * 127;
@@ -674,26 +684,32 @@ function glassMap(w, h) {
 }
 
 const pill = $(".topbar__inner");
-let pillSize = "";
-function fitGlass() {
-  if (!HAS_LIQUID || !document.body.classList.contains("is-landing")) return;
-  const w = Math.round(pill.offsetWidth), h = Math.round(pill.offsetHeight);
-  if (!w || `${w}x${h}` === pillSize) return;
-  pillSize = `${w}x${h}`;
-  const map = $("#liquid-glass-map");
-  map.setAttribute("href", glassMap(w, h));
+const menu = $("#mnav");
+const fitted = new WeakMap();
+function fitGlass(el, mapId, radius) {
+  if (!HAS_LIQUID) return;
+  const w = Math.round(el.offsetWidth), h = Math.round(el.offsetHeight);
+  if (!w || !h || fitted.get(el) === `${w}x${h}`) return;
+  fitted.set(el, `${w}x${h}`);
+  const map = document.getElementById(mapId);
+  map.setAttribute("href", glassMap(w, h, radius(h)));
   map.setAttribute("width", w);
   map.setAttribute("height", h);
 }
-if (HAS_LIQUID) new ResizeObserver(fitGlass).observe(pill);
+const fitPill = () => fitGlass(pill, "liquid-glass-map", (h) => h / 2);
+const fitMenu = () => fitGlass(menu, "liquid-glass-menu-map", () => 28);
+if (HAS_LIQUID) {
+  new ResizeObserver(fitPill).observe(pill);
+  new ResizeObserver(fitMenu).observe(menu);
+}
 
 // Flip the pill's text to white while it floats over dark imagery.
-const DARK = ".hero2, .feature, .path__media, .poster--blur, .poster--photo, .poster--red, .poster--olive, .host";
+const DARK = ".hero2, .feature, .path__media, .poster--blur, .poster--photo, .poster--red, .poster--olive, .host, " +
+  ".hero, .event__media, .card__media, .rowcard__media, .vibe, .comm__media, .myrow__media";
 const topbar = $(".topbar");
 let toneQueued = false;
 function updateTone() {
   toneQueued = false;
-  if (!document.body.classList.contains("is-landing")) return topbar.classList.remove("on-dark");
   const b = pill.getBoundingClientRect();
   const y = b.top + b.height / 2;
   // Sample a few points along the pill and go dark if most of them are over dark content.
@@ -704,6 +720,21 @@ function updateTone() {
 const queueTone = () => { if (!toneQueued) { toneQueued = true; requestAnimationFrame(updateTone); } };
 window.addEventListener("scroll", queueTone, { passive: true });
 window.addEventListener("resize", queueTone);
+
+// Mobile menu
+const menuBtn = $(".menu-btn");
+function setMenu(open) {
+  topbar.classList.toggle("is-open", open);
+  menuBtn.setAttribute("aria-expanded", open);
+  menuBtn.setAttribute("aria-label", open ? "Close menu" : "Menu");
+  if (open) fitMenu();
+}
+document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") setMenu(false); });
+document.addEventListener("click", (ev) => {
+  if (!topbar.classList.contains("is-open")) return;
+  if (!ev.target.closest(".menu-btn") && (!ev.target.closest(".mnav") || ev.target.closest("a, button"))) setMenu(false);
+}, true);
+matchMedia("(min-width: 761px)").addEventListener("change", (e) => e.matches && setMenu(false));
 
 $("#me-avatar").src = PEOPLE.me.photo;
 render();

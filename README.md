@@ -11,7 +11,7 @@ Then open http://localhost:8040.
 
 | Path | What it is |
 |---|---|
-| `index.html` | Shell: top nav (desktop), bottom tab bar (mobile), `#view` mount. |
+| `index.html` | Shell: glass pill header with desktop nav and a mobile hamburger menu, the refraction SVG filters, and the `#view` mount. |
 | `styles.css` | All styling. Brand tokens at the top of the file; mobile overrides under `@media (max-width: 760px)`. |
 | `data.js` | Mock people, communities, events, friend activity. Edit this to change content. `TODAY` pins the demo date. |
 | `home.js` | Landing page (`#/`): hero, partner strip, poster marquee, reviews, stacked feature cards, phone section, footer. Copy and photos are in `HOME`, `POSTERS` and `PARTNERS` at the top. |
@@ -20,7 +20,7 @@ Then open http://localhost:8040.
 
 ## Screens
 
-- `#/`: marketing landing page with its own header (App, About, Reviews, Create an Event). The app's tab bar is hidden here, and every CTA leads into the app.
+- `#/`: marketing landing page with its own header links (App, About, Reviews, Create an Event). Every CTA leads into the app.
 - `#/explore`: date strip, category chips, search, vibes. Trending, friends going, communities, and recommendations.
 - `#/event/:id`: event detail with ticket/RSVP, the presenting community, and who's going (friends first).
 - `#/my-events`: Upcoming, Saved, and Past.
@@ -31,3 +31,16 @@ Then open http://localhost:8040.
 RSVPs, saves, joins and friend adds persist in `localStorage`.
 
 Photos are Unsplash placeholders; swap the URLs in `data.js` for real photography.
+
+## Glass header
+
+Every page has a floating glass pill header. On phones (760px and below) the pill holds
+the logo and a hamburger that opens a glass menu panel.
+
+- Chrome and Edge get real refraction. `glassMap()` in `app.js` draws a displacement map
+  sized to the pill (and to the menu), and the `#liquid-glass` / `#liquid-glass-menu` SVG
+  filters in `index.html` apply it through `backdrop-filter`. Raise `scale` on those filters
+  to bend more.
+- Safari and Firefox can't run SVG filters in `backdrop-filter`, so they get frosted glass.
+- Text flips to white while the pill is over dark imagery. The selectors that count as dark
+  are the `DARK` list in `app.js`.
