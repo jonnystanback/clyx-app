@@ -1174,24 +1174,40 @@ body.pe-open { overflow: hidden; }
   .pe-themes { grid-template-columns: 1fr 1fr; }
 }
 
-/* Mobile header: a sticky white pill blended with exclusion instead of glass, so it shows a
-   negative of whatever passes beneath (black over the white page). The blend is switched off
-   while the menu is open, since the menu panel lives inside the header and would invert too. */
+/* Mobile header: a frosted glass pill floating at the bottom of the screen. The menu opens
+   upward from it. --tabbar-h reserves room for it, so the page, toasts and the event page's
+   ticket bar all sit clear of the pill. */
 @media (max-width: 760px) {
-  .topbar { mix-blend-mode: exclusion; }
-  .topbar.is-open { mix-blend-mode: normal; }
-  .topbar__inner,
-  html.has-liquid .topbar__inner,
-  .topbar.on-dark .topbar__inner,
-  html.has-liquid .topbar.on-dark .topbar__inner {
-    background: #fff;
-    backdrop-filter: none; -webkit-backdrop-filter: none;
-    box-shadow: none;
+  :root { --topbar-h: 0px; --tabbar-h: 70px; }
+  body { padding-top: env(safe-area-inset-top, 0px); }
+  .topbar {
+    position: fixed; top: auto; left: 0; right: 0;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    padding: 0 var(--gutter);
   }
-  .topbar__inner::before { display: none; }
-  .topbar.on-dark .logo img { filter: none; }
-  .topbar.on-dark .menu-btn { color: var(--ink); }
-  .menu-btn:hover { background: none; }
+  .topbar__inner,
+  html.has-liquid .topbar__inner {
+    background: rgba(255,255,255,.55);
+    backdrop-filter: blur(18px) saturate(1.8); -webkit-backdrop-filter: blur(18px) saturate(1.8);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.75),
+      inset 0 0 0 1px rgba(255,255,255,.35),
+      0 10px 30px -8px rgba(0,0,0,.3);
+  }
+  .topbar.on-dark .topbar__inner,
+  html.has-liquid .topbar.on-dark .topbar__inner { background: rgba(255,255,255,.14); }
+
+  .mnav,
+  html.has-liquid .mnav {
+    top: auto; bottom: calc(100% + 8px);
+    transform-origin: bottom center; transform: translateY(10px) scale(.97);
+    background: rgba(255,255,255,.6);
+    backdrop-filter: blur(22px) saturate(1.8); -webkit-backdrop-filter: blur(22px) saturate(1.8);
+  }
+  .topbar.is-open .mnav { transform: none; }
+  .cta-bar { border-top: 0; box-shadow: 0 -1px 0 var(--line); }
+  .home { padding-top: 16px; } /* the header used to provide this space */
+}
 }
 }
 }
