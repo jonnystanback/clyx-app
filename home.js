@@ -98,7 +98,7 @@ function viewHome() {
   return `
   <div class="home">
     <section class="hero2">
-      <img src="${HOME.hero}" alt="Three friends laughing together on a night out">
+      <img class="hero2__media" src="${HOME.hero}" alt="Three friends laughing together on a night out">
       <div class="hero2__text">
         <h1>Click with your friends</h1>
         <p>Clyx connects people to the friends, communities, and experiences around them, turning discovery into real world connection.</p>
@@ -240,6 +240,7 @@ function viewHome() {
 
 // Scroll-triggered bits: number count-up and the footer wordmark coming into focus.
 function initHome() {
+
   const io = new IntersectionObserver((entries) => {
     entries.forEach((en) => {
       if (!en.isIntersecting) return;
